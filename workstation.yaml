@@ -47,6 +47,7 @@
           - zsh
           - the_silver_searcher
           - syncthing
+          - podman-docker
 
 
 - name: Install asdf and oh-my-zsh for mike
