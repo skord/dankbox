@@ -1,0 +1,14 @@
+- name: Install Ham Packages
+  ansible.builtin.package:
+    state: latest
+    name:
+      - gnuradio
+      - gr-osmosdr
+      - CubicSDR
+      - gqrx
+      - fldigi
+      - flrig
+      - wsjtx
+      - SoapySDR-devel
+      - soapy-rtlsdr
+      - js8call

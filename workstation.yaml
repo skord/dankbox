@@ -148,3 +148,35 @@
         owner: mike
         group: mike
         mode: 0644
+
+- name: Install CHIRP Dependencies
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Install CHIRP Dependencies
+      ansible.builtin.package:
+        state: latest
+        name: 
+          - python3-wxpython4
+          - pipx
+        
+- name: Install CHIRP
+  hosts: localhost
+  become: no
+  tasks:
+    - name: Fetch CHIRP
+      ansible.builtin.get_url:
+        url: https://archive.chirpmyradio.com/chirp_next/next-20240919/chirp-20240919-py3-none-any.whl
+        dest: /tmp
+        mode: 0644
+    - name: Install CHIRP
+      community.general.pipx:
+        name: /tmp/chirp-20240919-py3-none-any.whl
+        system_site_packages: true
+        state: install
+
+- name: Install some other ham software
+  hosts: localhost
+  become: yes
+  roles:
+    - hamradio
