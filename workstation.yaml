@@ -21,6 +21,7 @@
           - gdbm-devel
           - gdbm-libs
           - gnome-tweaks
+          - google-droid-fonts-all
           - libffi-devel
           - libnsl2
           - libuuid-devel
@@ -32,12 +33,15 @@
           - openssl-devel
           - patch
           - podman-compose
+          - podman-docker
           - powerline
           - powerline-fonts
           - readline-devel
           - sqlite
           - sqlite-devel
+          - syncthing
           - tar
+          - the_silver_searcher
           - tk-devel
           - tmux-powerline
           - vim
@@ -45,9 +49,6 @@
           - xz-devel
           - zlib-devel
           - zsh
-          - the_silver_searcher
-          - syncthing
-          - podman-docker
 
 
 - name: Install asdf and oh-my-zsh for mike
