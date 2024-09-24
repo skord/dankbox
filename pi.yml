@@ -1,0 +1,109 @@
+---
+- name: Package stuff
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure Updated System
+      ansible.builtin.package:
+        name: "*"
+        state: latest
+      register: updated_system
+
+    - name: Install Base Packages
+      ansible.builtin.apt:
+        state: latest
+        name:
+          - apt-transport-https
+          - build-essential
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - software-properties-common
+          - zsh
+          - podman
+          - fzf
+
+- name: Add me
+  hosts: all
+  become: yes
+  tasks:
+    - name: Add me
+      ansible.builtin.user:
+        name: mike
+        groups: sudo
+        append: yes
+        state: present
+        shell: /usr/bin/zsh
+
+- name: Ensure sudoers file has sudo group enabled for passwordless sudo
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure sudoers file has sudo group enabled for passwordless sudo
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers
+        line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+        state: present
+        regexp: '^%sudo'
+
+- name: Create .ssh directory for mike
+  hosts: all
+  become: yes
+  tasks:
+    - name: Create .ssh directory for mike
+      ansible.builtin.file:
+        path: /home/mike/.ssh
+        state: directory
+        owner: mike
+        group: mike
+        mode: '0700'
+
+- name: Add my public key to authorized_keys
+  hosts: all
+  become: yes
+  tasks:
+    - name: Add my public key to authorized_keys
+      ansible.builtin.copy:
+        src: /Users/mike/.ssh/id_ed25519.pub
+        dest: /home/mike/.ssh/authorized_keys
+        owner: mike
+        group: mike
+        mode: '0600'
+
+- name: Install oh-my-zsh for mike
+  hosts: all
+  become: yes
+  become_user: mike
+  tasks:
+    - name: Install oh-my-zsh for mike
+      shell: >
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh --) --unattended"
+      args:
+        creates: /home/mike/.oh-my-zsh
+
+- name: Set ZSH Theme for mike
+  hosts: all
+  become: yes
+  become_user: mike
+  tasks:
+    - name: Set ZSH Theme for mike
+      ansible.builtin.lineinfile:
+        path: /home/mike/.zshrc
+        line: 'ZSH_THEME="agnoster"'
+        regexp: '^ZSH_THEME'
+        state: present
+
+
+- name: Configure fzf for mike
+  hosts: all
+  become: yes
+  become_user: mike
+  tasks:
+    - name: Configure fzf for mike
+      ansible.builtin.lineinfile:
+        path: /home/mike/.zshrc
+        line: 'plugins=(git fzf)'
+        regexp: '^plugins='
+        state: present

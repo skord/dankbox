@@ -1,0 +1,148 @@
+---
+- name: Ensure Updated System
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Update Packages
+      ansible.builtin.package:
+        name: "*"
+        state: "latest"
+    - name: Add Packages
+      ansible.builtin.package:
+        state: latest
+        name:
+          - autoconf
+          - bzip2
+          - bzip2-devel
+          - curl
+          - fzf
+          - gcc
+          - gcc
+          - gdbm-devel
+          - gdbm-libs
+          - gnome-tweaks
+          - libffi-devel
+          - libnsl2
+          - libuuid-devel
+          - libxslt-devel
+          - libyaml-devel
+          - make
+          - ncurses-devel
+          - obs-studio
+          - openssl-devel
+          - patch
+          - podman-compose
+          - powerline
+          - powerline-fonts
+          - readline-devel
+          - sqlite
+          - sqlite-devel
+          - tar
+          - tk-devel
+          - tmux-powerline
+          - vim
+          - xclip
+          - xz-devel
+          - zlib-devel
+          - zsh
+          - the_silver_searcher
+          - syncthing
+
+
+- name: Install asdf and oh-my-zsh for mike
+  hosts: localhost
+  tasks:
+    - name: Install asdf for mike
+      shell: >
+        git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.1
+      args:
+        creates: /home/mike/.asdf
+    - name: Install oh-my-zsh for mike
+      shell: >
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh --) -- unattended"
+      args:
+        creates: /home/mike/.oh-my-zsh
+    - name: Set ZSH Theme
+      ansible.builtin.lineinfile:
+        path: /home/mike/.zshrc
+        line: 'ZSH_THEME="agnoster"'
+        regexp: '^ZSH_THEME'
+        state: present
+    - name: Configure fzf for mike
+      ansible.builtin.lineinfile:
+        path: /home/mike/.zshrc
+        line: 'plugins=(git fzf asdf)'
+        regexp: '^plugins='
+        state: present
+
+
+- name: Install vscode
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Import Microsoft GPG key
+      rpm_key:
+        state: present
+        key: https://packages.microsoft.com/keys/microsoft.asc
+    - name: Add vscode repo
+      yum_repository:
+        name: code
+        description: Visual Studio Code
+        baseurl: https://packages.microsoft.com/yumrepos/vscode
+        enabled: yes
+        gpgcheck: yes
+        gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+    - name: Install package
+      ansible.builtin.package:
+        state: latest
+        name: code
+
+- name: Install Flatpaks
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Install Obsidian from Flatpak
+      community.general.flatpak:
+        name: md.obsidian.Obsidian
+        state: latest
+    - name: Install Spotify
+      community.general.flatpak:
+        name: com.spotify.Client
+        state: latest
+    - name: Install Slack
+      community.general.flatpak:
+        name: com.slack.Slack
+        state: latest
+    - name: Install Podman Desktop
+      community.general.flatpak:
+        name: io.podman_desktop.PodmanDesktop
+        state: latest
+    - name: Install trayscale
+      community.general.flatpak:
+        name: dev.deedles.Trayscale
+        state: latest
+
+- name: Setup SSH Server
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Install OpenSSH Server
+      ansible.builtin.package:
+        state: latest
+        name: openssh-server
+    - name: Start and Enable SSH Service
+      ansible.builtin.service:
+        name: sshd
+        state: started
+        enabled: yes
+
+- name: Setup tmux config
+  hosts: localhost
+  tasks:
+    - name: Copy tmux config
+      ansible.builtin.copy:
+        src: files/tmux.conf
+        dest: /home/mike/.tmux.conf
+        owner: mike
+        group: mike
+        mode: 0644
