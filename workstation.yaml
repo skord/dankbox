@@ -73,7 +73,7 @@
     - name: Configure fzf for mike
       ansible.builtin.lineinfile:
         path: /home/mike/.zshrc
-        line: 'plugins=(git fzf asdf)'
+        line: 'plugins=(git fzf asdf kubectl gcloud)'
         regexp: '^plugins='
         state: present
 

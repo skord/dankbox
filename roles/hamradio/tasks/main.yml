@@ -12,3 +12,4 @@
       - SoapySDR-devel
       - soapy-rtlsdr
       - js8call
+      - sdrangel
