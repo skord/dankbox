@@ -1,0 +1,10 @@
+---
+- name: Package stuff
+  hosts: pis
+  become: yes
+  tasks:
+    - name: Ensure Updated System
+      ansible.builtin.package:
+        name: "*"
+        state: latest
+      register: updated_system
